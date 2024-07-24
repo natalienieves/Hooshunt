@@ -1,0 +1,124 @@
+{% load socialaccount %}
+{% load bootstrap5 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<html lang="en">
+
+<head>
+  <title>Submit Clue</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&family=PT+Sans&display=swap" rel="stylesheet">
+
+  <style>
+    html,
+    body {
+      font-family: "Roboto", sans-serif;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <head>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #E7F2F8;
+      }
+
+      .content {
+        text-align: center;
+        width: 50%;
+      }
+
+      table {
+        width: 100%;
+        margin-bottom: 20px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      label {
+        display: block;
+      }
+
+      h3 {
+        font-family: 'Open Sans', sans-serif;
+        color: #061826;
+      }
+
+      .card {
+        border-radius: 25px;
+      }
+
+      .card-header {
+        border-radius: 25px 25px 0 0 !important;
+        background-color: #FFA384;
+      }
+
+      .card-body {
+        font-family: 'PT Sans', sans-serif;
+      }
+    </style>
+  </head>
+
+  <div class="w3-top">
+    <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+      <a class="w3-bar-item w3-button w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1"
+        href="javascript:void(0)" onclick="w3_open()"><i class="fa fa-bars"></i></a>
+      <a href="{% url 'user' %}" class="w3-bar-item w3-button w3-theme-l1">Home</a>
+      <a href="{% url 'listOfBundles' %}" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Bundles</a>
+      <a href="{% url 'map' %}" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Map</a>
+      <a href="{% url 'leaderboard' %}" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Leaderboard</a>
+      <a href="{% url 'submitClue' %}" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Submit Clue</a>
+      <a href="{% url 'logout' %}" class="w3-bar-item w3-button w3-hide-small w3-hover-white w3-right">Log Out</a>
+    </div>
+  </div>
+
+  <body>
+    <div class="content">
+      {% if user.is_authenticated %}
+      <div class="container-lg mt-4">
+        <form method="post">
+          {% csrf_token %}
+          <div class="card">
+            <div class="card-header">
+              <h3>Submit a Clue!</h3>
+            </div>
+            <div class="card-body">
+              {{ form.non_form_errors }}
+              {{ form.as_p }}
+              <div class="mt-5 mb-4 d-flex flex-column align-items-center">
+                {% buttons submit='Submit' %}{% endbuttons %}
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      {% else %}
+      <a class="btn btn-primary" href="{% provider_login_url 'google' %}" role="button">Login With Google</a>
+      {% endif %}
+    </div>
+  </body>
+
+
+</html>

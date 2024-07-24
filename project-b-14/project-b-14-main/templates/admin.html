@@ -1,0 +1,93 @@
+{% load socialaccount %}
+{% load bootstrap5 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/0f3fa4a3a4.js" crossorigin="anonymous"></script>
+    <style>
+        .center-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #E7F2F8;
+        }
+
+        .clue-box {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="center-container">
+        <div class="clue-box">
+            {% if user.is_authenticated %}
+            {% if user.status == 'admin' %}
+            <!-- admin -->
+            <h1>Welcome, admin {{user.username}}!</h1>
+            <h1>Review Clues!</h1>
+            {% if unapproved_clue_list %}
+            <form method="post">
+                {% csrf_token %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Description</th>
+                            <th>Hints</th>
+                            <th>Longitude</th>
+                            <th>Latitude</th>
+                            <th>Bundle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for clue in unapproved_clue_list %}
+                        <tr>
+                            <td>
+                                <label>
+                                    <input type="checkbox" name="clue_ids" value="{{ clue.id }}">
+                                    Clue {{ clue.id }}
+                                </label>
+                            </td>
+                            <td>{{ clue.description }}</td>
+                            <td>{{ clue.hints }}</td>
+                            <td>{{ clue.longitude }}</td>
+                            <td>{{ clue.latitude }}</td>
+                            <td>{{ clue.bundle }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- buttons citation -->
+                <button type="submit" class="btn btn-primary" name="approve_selected">Approve Selected Clues</button>
+                <button type="submit" class="btn btn-danger" name="delete_selected">Delete Selected Clues</button>
+            </form> {% else %}
+            <h1>All Clues Have Been Reviewed!</h1>
+            {% endif %}
+            <a class="btn btn-primary" href="{% url 'logout' %}" role="button">Logout</a>
+            {% else %}
+            <h1>You are not approved to review clues!</h1>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>

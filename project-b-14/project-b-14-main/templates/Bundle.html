@@ -1,0 +1,308 @@
+
+
+{% load socialaccount %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/0f3fa4a3a4.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&family=PT+Sans&display=swap" rel="stylesheet">
+    <style>
+        html,
+        body {
+            font-family: "Roboto", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff9d9;
+        }
+
+        .w3-container{
+            text-align: center;
+        }
+
+        h1 {
+            color: #061826;
+            font-family: 'Open Sans', sans-serif;
+            font-weight: bold;
+            font-size: 60px;
+        }
+
+        .title{
+            padding-bottom: 10px;
+        }
+
+        .clue-card {
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .clue-card-body {
+            padding: 20px;
+        }
+        .CheckInBtn:disabled,
+        .HintsBtn:disabled {
+            background-color: gray;
+            color: white;
+            cursor: not-allowed;
+            border: 2px gray;
+        }
+
+        .CheckInBtn {
+            background-color: #74BDCB;
+            border-color: #74BDCB;
+            color: white;
+            font-family: 'Open Sans', sans-serif;
+        }
+        .HintsBtn {
+            background-color: #FFA384;
+            border-color: #FFA384;
+            color: white;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .buttons {
+            display: inline-block;
+        }
+    </style>
+    <script>
+        // Geolocation: Displaying User or Device Position on Maps Citation
+        // Working with AJAX in Django Citation
+        function getUserLocation(clueID, button) {
+            console.log("getting location");
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var latitude = position.coords.latitude.toFixed(15);
+                    var longitude = position.coords.longitude.toFixed(15);
+                    var messageID = "message_" + clueID;
+
+                    fetch('calculate_score/', {
+                        method: "POST",
+                        credentials: "same-origin",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "X-CSRFToken": document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                        },
+                        body: JSON.stringify({
+                            'clue_id': clueID,
+                            'latitude': latitude,
+                            'longitude': longitude,
+                        })
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        }).then(data => {
+                            console.log(data);
+                            var message = document.getElementById(messageID);
+                            console.log(data.message);
+                            updateAttemptsDisplay(clueID);
+                            if (data.message === 'Check-in successful!') {
+                                // window.location.reload();
+                                localStorage.setItem('clueState_' + clueID, 'solved');
+                                // console.log("local Storage: ", localStorage);
+                                button.disabled = true;
+                                button.textContent = 'Completed!';
+                                button.classList.add('disabled-button');
+                            } else {
+                                message.innerHTML = "You are not at the right location! :(";
+                            }
+                        });
+
+
+                }, function (error) {
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            alert("User denied the request for Geolocation.");
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            alert("Location information is unavailable.");
+                            break;
+                        case error.TIMEOUT:
+                            alert("The request to get user location timed out.");
+                            break;
+                        case error.UNKNOWN_ERROR:
+                            alert("An unknown error occurred.");
+                            break;
+                    }
+                });
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        }
+
+        function revealHint(clueID) {
+            var hintElement = document.getElementById('hintContainer_' + clueID);
+            var hint = document.getElementById('hint_' + clueID);
+            hintElement.innerHTML = "<p>Hint: " + hint.innerHTML + "</p>";
+            localStorage.setItem('hintText_' + clueID, hint.innerHTML);
+            localStorage.setItem('hintState_' + clueID, 'revealed');
+            var hintbutton = document.getElementById('HintsBtn_' + clueID);
+            hintbutton.disabled = true;
+            hintbutton.textContent = 'Hint Revealed!';
+            hintbutton.classList.add('disabled-button');
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            {% for bundles, clues in active_clues.items %}
+            {% for clue in clues %}
+            var clueID = '{{clue.id}}';
+            var button = document.getElementById('CheckInBtn_' + clueID);
+            var clueState = localStorage.getItem(`clueState_${clueID}`);
+            console.log("Clue State: ", clueState);
+            var hintState = localStorage.getItem(`hintState_${clueID}`);
+            var hintElement = document.getElementById('hintContainer_' + clueID);
+            var hint = document.getElementById('hint_' + clueID);
+            var hintbutton = document.getElementById('HintsBtn_' + clueID);
+            if (!localStorage.getItem(`attempts_${clueID}`)) {
+                localStorage.setItem(`attempts_${clueID}`, attempts);
+            }
+            if (clueState === 'solved') {
+                console.log("hey");
+                button.disabled = true;
+                button.textContent = 'Completed!';
+                button.classList.add('disabled-button');
+                console.log("Button disabled for clue ID:", clueID);
+            }
+            else if (clueState === 'disabled') {
+                button.disabled = true;
+                button.textContent = 'No Attempts Remaining';
+                button.classList.add('disabled-button');
+                console.log("Button disabled for clue ID:", clueID);
+                if(hintState !== 'revealed'){
+                    hintbutton.textContent = 'Hint Not Available!';
+                    hintbutton.disabled = true;
+                    hintbutton.classList.add('disabled-button');
+                }
+            }
+            if (hintState === 'revealed') {
+                hintbutton.disabled = true;
+                hintbutton.textContent = 'Hint Revealed!';
+                hintbutton.classList.add('disabled-button');
+                hintElement.innerHTML = "<p>Hint: " + hint.innerHTML + "</p>";
+            }
+            {% endfor %}
+            {% endfor %}
+        });
+
+        let attempts = 5;
+
+        function updateAttemptsDisplay(clueID) {
+            const attemptsElement = document.getElementById(`attempts_${clueID}`);
+            let attempts = parseInt(attemptsElement.innerText);
+            attempts--;
+            console.log("attempts: ", attempts);
+            if (attemptsElement) {
+                attemptsElement.innerText = attempts;
+                const button = document.getElementById(`CheckInBtn_${clueID}`);
+                const hintButton = document.getElementById(`HintsBtn_${clueID}`);
+                if (attempts === 0) {
+                    button.disabled = true;
+                    button.textContent = 'No Attempts Remaining';
+                    button.classList.add('disabled-button');
+                    localStorage.setItem(`clueState_${clueID}`, 'disabled');
+
+                    hintButton.disabled = true;
+                    hintButton.classList.add('disabled-button');
+                    localStorage.setItem(`hintState__${clueID}`, 'disabled');
+                }
+            }
+            localStorage.setItem(`attempts_${clueID}`, attempts);
+            console.log("Attempts for clueID:", localStorage.getItem(`attempts_${clueID}`));
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <!-- Bootstrap Navigation Bar Citation - used in every html file -->
+    <div class="w3-top">
+        <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+            <a class="w3-bar-item w3-button w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1"
+                href="javascript:void(0)" onclick="w3_open()"><i class="fa fa-bars"></i></a>
+            <a href="{% url 'user' %}" class="w3-bar-item w3-button w3-theme-l1">Home</a>
+            <a href="{% url 'listOfBundles' %}" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Bundles</a>
+            <a href="{% url 'map' %}" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Map</a>
+            <a href="{% url 'leaderboard' %}" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Leaderboard</a>
+            <a href="{% url 'submitClue' %}" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Submit Clue</a>
+            <a href="{% url 'logout' %}" class="w3-bar-item w3-button w3-hide-small w3-hover-white w3-right">Log Out</a>
+        </div>
+    </div>
+
+    <div class="w3-row w3-padding-64">
+        <div class="w3-container">
+            <div class = "title">
+                <h1><i class="fa-solid fa-puzzle-piece fa-bounce" style="color: #d0e8f5"></i>   {{ bundle }}   <i class="fa-solid fa-puzzle-piece fa-bounce" style="color: #d0e8f5"></i></h1>
+            </div>
+            {% if active_clues %}
+            <div class="d-flex justify-content-center">
+                <div class="list-group">
+                    <div class="row row-cols-1 row-cols-md-3 g-3 clue-card-container">
+                        {% for bundles, clues in active_clues.items %}
+                            {% for clue in clues %}
+                                <div class="col">
+                                    <div class="card clue-card shadow-sm">
+                                        <div class="card-body clue-card-body">
+                                            <h3>{{ clue.description }}</h3>
+                                            {% for user_clue_score in user_clue_scores %}
+                                                {% if user_clue_score.clue.id == clue.id %}
+                                                    <p>Attempts Left: <span
+                                                            id="attempts_{{ clue.id }}">{{ user_clue_score.attempts_left }}</span>
+                                                    </p>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <div class="buttons">
+                                                {% csrf_token %}
+                                                <button class="btn btn-primary CheckInBtn" type="submit"
+                                                    onclick="getUserLocation('{{clue.id}}', this)"
+                                                    id="CheckInBtn_{{clue.id}}">Check In!</button>
+                                                <div class="buttons">
+                                                </div>
+                                                <button class="btn btn-primary HintsBtn" type="button"
+                                                    onclick="revealHint('{{ clue.id }}')" id="HintsBtn_{{clue.id}}">Reveal
+                                                    Hint</button>
+                                            </div>
+                                            <div class="message-container">
+                                                <div id="message_{{clue.id}}"></div>
+                                            </div>
+                                            <div class="hint-container" id="hintContainer_{{ clue.id }}">
+                                                {% if clue.hints %}
+                                                    <p id="hint_{{ clue.id }}" style="display: none;">
+                                                        {{ clue.hints }}</p>
+                                                {% else %}
+                                                    <p>No hint available</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+                <p>No polls are available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+
+</html>

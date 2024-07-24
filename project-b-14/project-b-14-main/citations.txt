@@ -1,0 +1,132 @@
+Title: Buttons
+
+Author: Bootstrap
+
+URL: https://getbootstrap.com/docs/5.3/components/buttons/
+
+_____________________________________________________________
+
+Title:  Using the Django authentication system
+
+Author: Django
+
+URL: https://docs.djangoproject.com/en/4.2/topics/auth/default/
+_____________________________________________________________
+
+Title: Django Tutorial - Creating Custom User model in Django website #4
+
+Author: Python Lessons
+
+URL: https://www.youtube.com/watch?v=_tHabkMKh98
+_____________________________________________________________ 
+
+Title: User Registration in Django using Google OAuth
+
+Author:  Geoffrey Mungai Website
+
+URL: https://www.section.io/engineering-education/django-google-oauth/
+_____________________________________________________________
+
+Title: Django: How can I take the choice in drop-down list and redirect to another page.
+
+Author: aynber
+
+URL: https://stackoverflow.com/questions/68421837/django-how-can-i-take-the-choice-in-drop-down-list-and-redirect-to-another-page
+
+_____________________________________________________________
+
+Title: How To Style Figure and Image HTML Elements with CSS
+
+Author: Phillip Zastrow
+
+URL: https://www.digitalocean.com/community/tutorials/how-to-style-figure-and-image-html-elements-with-css
+
+_______________________________________________________________
+
+Title: CSS List Style: 20+ examples
+
+Author: Shark Coder
+
+URL: https://sharkcoder.com/blocks/list
+
+_______________________________________________________________
+
+Title: Login form
+
+Author: MDBootstrap
+
+URL: https://mdbootstrap.com/docs/standard/extended/login/
+
+_______________________________________________________________
+
+Title: Hover Effects
+
+Author: MDBootstrap
+
+URL: https://mdbootstrap.com/docs/standard/content-styles/hover-effects/
+
+_______________________________________________________________
+
+Title: Album Examples
+
+Author: Bootstrap 
+
+URL: https://getbootstrap.com/docs/5.3/examples/album/
+
+_______________________________________________________________
+
+Title: Quick Unit Testing of Django Models With Mock
+
+Author: Sabyasachi Nandy
+
+URL: https://medium.com/@sabya.nandy14/quick-unit-testing-of-django-models-with-mock-3fb0d966726c
+
+_______________________________________________________________
+
+Title:  Getting Started (Selenium)
+
+Author: Selenium
+
+URL: https://selenium-python.readthedocs.io/getting-started.html
+
+_______________________________________________________________
+
+Title: Working with AJAX in Django 
+
+Author: Yacine Rouizi
+
+Date: 8/24/21
+
+URL: https://testdriven.io/blog/django-ajax-xhr/
+
+_______________________________________________________________
+
+Title: Geolocation: Displaying User or Device Position on Maps
+
+Author: Google
+
+URL: https://developers.google.com/maps/documentation/javascript/geolocation
+
+_______________________________________________________________
+
+Title: Bootstrap Navigation Bar
+
+Author: W3Schools 
+
+URL: https://www.w3schools.com/bootstrap/bootstrap_navbar.asp
+
+_______________________________________________________________
+
+Title: Sign in with Google Branding Guidelines Citation
+
+Author: Google 
+
+URL: https://developers.google.com/identity/branding-guidelines
+
+_______________________________________________________________
+
+Title: Dropdown in Django Model
+
+Author: Ronan Boiteau
+
+URL: https://stackoverflow.com/questions/31130706/dropdown-in-django-model
